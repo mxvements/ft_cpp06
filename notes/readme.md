@@ -84,12 +84,20 @@ Parent		*d = &a;			// Implicit upcast -> OK
 Child1		*e = d;				// Implicit downcast -> hell NO -> does not compile!
 Child2		*f = (Child2 *)d;	// Explicit downcast -> OK, but really?, wont't run properly
 ```
+## c++ casts
++ static cast
++ dynamic cast
++ reinterpret cast
++ const cast
 
-## static cast
+### static cast
 
 the most visual cast in cpp
 
 keyword: `static_cast<T>`
+
++ syntax: `static_cast<new_type>(expression)`
+
 
 ```c++
 int		a = 42;						// Reference value
@@ -119,6 +127,7 @@ Unrelated	*e = static_cast<Unrelated *>(&a);	// Explicit conversion -> NO !
 the most interesting
 + it's the only happening at runtime
 + it only works with polymorphic instances
++ syntax: `dynamic_cast<new_type>(expression)`
 
 ```c++
 class Parent	{public: virtual ~Parent(void) {}};
@@ -145,24 +154,84 @@ try {
 
 ```
 
-## reinterpret cast
+### reinterpret cast
+
++ allows converting one pointer type to another, even when the types are completely unrelated
++ reinterpret any address as any other address
++ it does not perform any runtime checks
++ syntax:  `reinterpret_cast<new_type>(expression)
 
 ```c++
+float	a = 420.042f;
+void	*b = &a;
+int		*c = reinterpret_cast<int *>(b);
+int		&d = reinterpret_cast<int &>(b);
 ```
 
-## const cast
+### const cast
+
++ (the last cpp cast)
++ transform the type qualifyer
++ syntax: `const_cast<new_type>(expression)`
 
 ```c++
+int		a = 42;	//reference value
+
+int const 	*b = &a; 					// implicit promotion
+int			*c = b;						// implicit demotion -> hell no!
+int			*d = const_cast<int *>(b);	// explicit demotion -> ok, i obey
 ```
 
 ## cast operators
 
++ type cast operators, new syntax that allows to deine in our clases implicit casts to a type we're interested in
++ syntax:  `opertator type()`
+
 ```c++
+class Foo {
+
+	private:
+		float	_v;
+
+	public:
+		Foo(float const v) : _v(v) { }
+		float	getv(void) 	{return this->_v;}
+		
+		operator float()	{return this->_v;}
+		operator int()		{return static_cast<int>(this->_v);}
+
+}
 ```
 
 ## explicit keyword
 
++ `keyword<type>()` is pretty similar to a function call
++ constructor are conceptually closed to the cast, when we give some parameters we get an object of a different type
++ 
+
 ```c++
+class A {};
+class B {};
+
+class C {
+	public: 
+					C(A const & _) {return ;}	// constructor, implicit conversion from A to C
+		explicit	C(B const & _ ) {return ;}	// constructor, explicit conversion from B to C
+
+};
+
+
+void f(C const & _ ){
+	return ;
+}
+
+
+int main(void){
+	f( A() ); // implicit conversion OK
+	f( B() ); // implicit conversion NOT OK, constructor is explicit
+	f( C(B()) ); //explicit constructor -> OK
+}
 ```
 
 ## conclusion
++ 
