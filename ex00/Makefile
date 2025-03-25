@@ -1,12 +1,12 @@
 NAME=convert
-CC=cc++
-FLAGS=-Wall -Wextra -Werror -g3
+CC=c++
+FLAGS=-Wall -Wextra -Werror -g3 -std=c++98
 
 FILES = main.cpp \
 		ScalarConverter.cpp
 
 OBJ_PATH=	.obj/
-OBJ=		$(FILES:%cpp=$(OBJ_PATH)%.o)
+OBJ=		$(FILES:%.cpp=$(OBJ_PATH)%.o)
 
 all: $(NAME)
 
