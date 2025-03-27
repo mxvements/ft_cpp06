@@ -1,9 +1,9 @@
-NAME=convert
-CC=c++
-FLAGS=-Wall -Wextra -Werror -g3 -std=c++98
+NAME=	base
+CC=		c++
+FLAGS=	-Wall -Wextra -Werror -g3 -std=c++98
 
 FILES = main.cpp \
-		ScalarConverter.cpp
+		Base.cpp
 
 OBJ_PATH=	.obj/
 OBJ=		$(FILES:%.cpp=$(OBJ_PATH)%.o)
