@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:39:37 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 19:07:42 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:36:54 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,16 @@ static void convert_test(void)
 	print_test("127");
 	print_test("32");
 	print_test("31");
+	//strtod errors
+	std::cout << UNDERLINED << FG_BR_BLUE << "CONVERSION cases:" << RESET << std::endl;
+	print_test("++65");
+	print_test("--94");
+	print_test("  +65");
+	print_test("92ad5d");
+	print_test("95fffff");
 }
+
+/* ************************************************************************** */
 
 int	main(int argc, char **argv)
 {	

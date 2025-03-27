@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:49:21 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 18:35:38 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:37:05 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ static void convert_nbr(std::string literal, Type t)
 	std::string str_end = end_ptr;
 	if (t == FLOAT && str_end.length() > 0 && !(str_end.length() == 1 && str_end[0] == 'f') )
 		return impossible();
-	if ((t == DOUBLE || t == INT)  && str_end.length() > 0)
+	if ((t == DOUBLE || t == INT) && str_end.length() > 0)
 		return impossible();
 
 	Format format[4] = {
@@ -155,20 +155,19 @@ void ScalarConverter::convert(std::string literal)
 {
 	if (is_edge_cases(literal) == 1)
 		return;
-	if (literal.length() == 1 ){
-		if (!std::isdigit(literal[0]) && (std::isprint(literal[0]) || std::iscntrl(literal[0])))
-			return (convert_char(literal));
-		else if(std::isdigit(literal[0]))
+	if (literal.length() == 1 )
+	{
+		if(std::isdigit(literal[0]))
 			return (convert_nbr(literal, INT));
+		if ((std::isprint(literal[0]) || std::iscntrl(literal[0])))
+			return (convert_char(literal));
 		return (impossible());
 	} else {
 		if (literal.find("f") != std::string::npos)
 			return (convert_nbr(literal, FLOAT));
-		else if (literal.find(".") != std::string::npos)
+		else if (literal.find(".") != std::string::npos) //this is not necessary
 			return (convert_nbr(literal, DOUBLE));
-		else if(std::isdigit(literal[0]) || (!std::isdigit(literal[0]) && std::isdigit(literal[1])))
-			return (convert_nbr(literal, INT));
 		else
-			return (impossible());
+			return (convert_nbr(literal, INT));
 	}
 }
