@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:49:21 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/25 20:45:48 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:06:00 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,42 +42,55 @@
  * pdf examples:
  *  char literals	-> 	'c', 'a'
  *  int literals	-> 	0, -42, 42
- * 	float literales	-> 	0.0f, -4.2f, 4.2f, -inff, +inff
- *  double literals	-> 	0.0, -4.2, 4.2, -inf, +inf, (+/-)nan
+ * 	float literales	-> 	0.0f, -4.2f, 4.2f, -inff, +inff, nanf
+ *  double literals	-> 	0.0, -4.2, 4.2, -inf, +inf, nan
+ *
+ * use of union:
+ * an union is a special data structure that allows multiple variables to share
+ * the same memory allocation
+ *
+ * using constructor inside a struc
+ * In C++ the only difference between a class and a struct is that members
+ * and base classes are private by default in classes, whereas they are public
+ * by default in structs. So structs can have constructors, and the syntax is
+ * the same as for classes.
  */
 
-
-static void formatter(std::string msg[4])
+static void formatter(Format f[4])
 {
-	std::cout << "char : " << msg[0] << std::endl;
-	std::cout << "int : " << msg[1] << std::endl;
-	std::cout << "float : " << msg[2] << std::endl;
-	std::cout << "double : " << msg[3] << std::endl;
+	for (int i = 0; i < 4; i++)
+	{
+		switch (f[i].type)
+		{
+		case CHAR:
+			f[i].iserror ? std::cout << "char : " << f[i].error << std::endl
+						 : std::cout << "char : '" << f[i].c << "'" << std::endl;
+			break;
+		case INT:
+			f[i].iserror ? std::cout << "int :  " << f[i].error << std::endl
+						 : std::cout << "int :  " << f[i].i << std::endl;
+			break;
+		case FLOAT:
+			f[i].iserror ? std::cout << "float : " << f[i].error << std::endl
+						 : std::cout << std::fixed << std::setprecision(1) << "float : " << f[i].f << "f" << std::endl;
+			break;
+		case DOUBLE:
+			f[i].iserror ? std::cout << "double : " << f[i].error << std::endl
+						 : std::cout << std::fixed << std::setprecision(1) << "double : " << f[i].d << std::endl;
+			break;
+		}
+	}
 }
-
-static void formatter(char c, int i, float f, double d)
-{
-	std::cout << "char : " << c << std::endl;
-	std::cout << "int : " << i << std::endl;
-	std::cout << "float : " << f << std::endl;
-	std::cout << "double : " << d << std::endl;
-}
-
-struct EdgeCase
-{
-	std::string input;
-	std::string format[4];
-};
 
 static int is_edge_cases(std::string literal)
 {
 	EdgeCase cases[6] = {
-		{"nanf", {"impossible", "impossible", "nanf", "nan"}},
-		{"nan", {"impossible", "impossible", "nanf", "nan"}},
-		{"+inff", {"impossible", "impossible", "+inff", "+inf"}},
-		{"+inf", {"impossible", "impossible", "+inff", "+inf"}},
-		{"-inff", {"impossible", "impossible", "-inff", "-inf"}},
-		{"-inf", {"impossible", "impossible", "-inff", "-inf"}}};
+		{"nanf", {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "nanf"), Format(DOUBLE, "nan")}},
+		{"nan", {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "nanf"), Format(DOUBLE, "nan")}},
+		{"+inff", {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "+inff"), Format(DOUBLE, "+inf")}},
+		{"+inf", {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "+inff"), Format(DOUBLE, "+inf")}},
+		{"-inff", {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "-inff"), Format(DOUBLE, "-inf")}},
+		{"-inf", {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "-inff"), Format(DOUBLE, "-inf")}}};
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -94,20 +107,15 @@ static int is_edge_cases(std::string literal)
  * convert from string to its actual type
  * then convert it explicitly to the other data types *
  */
-
 static void convert_char(std::string literal)
 {
-	if (literal.length() > 1)
-	{
-		std::string msg[4] = {"impossible", "impossible", "impossible", "impossible"};
-		return formatter(msg);
-	}
 	// explicit conversion
 	char c = literal[0];
 	int i = static_cast<int>(c);
 	float f = static_cast<float>(c);
 	double d = static_cast<double>(c);
-	return formatter(c, i, f, d);
+	Format format[4] = {std::isprint(c) ? c : Format(CHAR, "Non displayable"), i, f, d};
+	return formatter(format);
 }
 
 void ScalarConverter::convert(std::string literal)
@@ -122,12 +130,7 @@ void ScalarConverter::convert(std::string literal)
 	{
 		return;
 	}
-	else if (std::isalpha(literal[0]))
-	{
-		std::cout << "could be a char!" << std::endl;
-		convert_char(literal);
-	}
-	else if (literal.find("f") != std::string::npos)
+	if (literal.find("f") != std::string::npos)
 	{
 		std::cout << "could be a float!" << std::endl;
 		// use atof
@@ -137,9 +140,19 @@ void ScalarConverter::convert(std::string literal)
 		std::cout << "could be a double!" << std::endl;
 		// use atod
 	}
-	else
+	else if (literal.length() == 1 && !std::isdigit(literal[0]) && (std::isprint(literal[0]) || std::iscntrl(literal[0])))
+	{
+		std::cout << "could be a char!" << std::endl;
+		convert_char(literal);
+	}
+	else if ((std::isdigit(literal[0])) || (!std::isdigit(literal[0]) && std::isdigit(literal[1])))
 	{
 		std::cout << "could be an int!" << std::endl;
 		// use atoi
+	}
+	else
+	{
+		Format f[4] = {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "impossible"), Format(DOUBLE, "impossible")};
+		return formatter(f);
 	}
 }
