@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:49:21 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 17:26:58 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 18:35:38 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,11 @@ static void formatter(Format f[4])
 			break;
 		case FLOAT:
 			f[i].iserror ? std::cout << "float : " << f[i].error << std::endl
-						 : std::cout << std::fixed << std::setprecision(1) << "float : " << f[i].f << "f" << std::endl;
+						 : std::cout << std::fixed << std::setprecision(2) << "float : " << f[i].f << "f" << std::endl;
 			break;
 		case DOUBLE:
 			f[i].iserror ? std::cout << "double : " << f[i].error << std::endl
-						 : std::cout << std::fixed << std::setprecision(1) << "double : " << f[i].d << std::endl;
+						 : std::cout << std::fixed << std::setprecision(2) << "double : " << f[i].d << std::endl;
 			break;
 		}
 	}
@@ -113,10 +113,6 @@ static int is_edge_cases(std::string literal)
 	return (0);
 }
 
-/**
- * convert from string to its actual type
- * then convert it explicitly to the other data types *
- */
 static void convert_char(std::string literal)
 {
 	char c = literal[0];
@@ -127,26 +123,30 @@ static void convert_char(std::string literal)
 	return formatter(format);
 }
 
-static void convert_int(std::string literal)
+static void convert_nbr(std::string literal, Type t)
 {
 	char *end_ptr;
-	long l = std::strtol(literal.c_str(), &end_ptr, 10);
+	double nbr = std::strtod(literal.c_str(), &end_ptr);
 	if (errno)
 		return impossible();
+		
 	std::string str_end = end_ptr;
-	if (str_end.length() > 0)
+	if (t == FLOAT && str_end.length() > 0 && !(str_end.length() == 1 && str_end[0] == 'f') )
 		return impossible();
+	if ((t == DOUBLE || t == INT)  && str_end.length() > 0)
+		return impossible();
+
 	Format format[4] = {
-		(l < 0 || l > 255)
+		(nbr < 0 || nbr > 255)
 			? Format(CHAR, "impossible") //not in extended ascii
-			: ( l < 32 || l > 127)
+			: ( nbr < 32 || nbr > 127)
 				? Format(CHAR, "Non displayable") // not in printable ascii
-				: static_cast<char>(l), 
-		(l < INT_MIN || l > INT_MAX) 
+				: static_cast<char>(nbr), 
+		(nbr < INT_MIN || nbr > INT_MAX) 
 			? Format(INT, "impossible") 
-			: static_cast<int>(l), 
-		static_cast<float>(l),
-		static_cast<double>(l)
+			: static_cast<int>(nbr), 
+		static_cast<float>(nbr),
+		static_cast<double>(nbr)
 		};
 	return formatter(format);
 }
@@ -154,29 +154,21 @@ static void convert_int(std::string literal)
 void ScalarConverter::convert(std::string literal)
 {
 	if (is_edge_cases(literal) == 1)
-	{
 		return;
-	}
-	if (literal.find("f") != std::string::npos)
-	{
-		std::cout << "could be a float!" << std::endl;
-		// use atof
-	}
-	else if (literal.find(".") != std::string::npos)
-	{
-		std::cout << "could be a double!" << std::endl;
-		// use atod
-	}
-	else if (literal.length() == 1 && !std::isdigit(literal[0]) && (std::isprint(literal[0]) || std::iscntrl(literal[0])))
-	{
-		convert_char(literal);
-	}
-	else if ((std::isdigit(literal[0])) || (!std::isdigit(literal[0]) && std::isdigit(literal[1])))
-	{
-		convert_int(literal);
-	}
-	else
-	{
-		impossible();
+	if (literal.length() == 1 ){
+		if (!std::isdigit(literal[0]) && (std::isprint(literal[0]) || std::iscntrl(literal[0])))
+			return (convert_char(literal));
+		else if(std::isdigit(literal[0]))
+			return (convert_nbr(literal, INT));
+		return (impossible());
+	} else {
+		if (literal.find("f") != std::string::npos)
+			return (convert_nbr(literal, FLOAT));
+		else if (literal.find(".") != std::string::npos)
+			return (convert_nbr(literal, DOUBLE));
+		else if(std::isdigit(literal[0]) || (!std::isdigit(literal[0]) && std::isdigit(literal[1])))
+			return (convert_nbr(literal, INT));
+		else
+			return (impossible());
 	}
 }

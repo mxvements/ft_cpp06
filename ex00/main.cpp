@@ -6,11 +6,12 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:39:37 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 16:07:00 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:07:42 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ScalarConverter.hpp"
+#include "Colors.hpp"
 
 /**
  * ./convert 0
@@ -31,38 +32,53 @@
  * float: 42.0f
  * double: 42.0
  */
+static void print_test(std::string literal)
+{
+	std::cout << FG_LIGHT_BLUE << "Testing: " << BOLD << literal << RESET << std::endl;
+	ScalarConverter::convert(literal);
+	std::cout << std::endl;
+}
+
 static void convert_test(void)
 {
-	std::cerr << "testing cases..." << std::endl;
-	std::cerr << std::endl;
 	//char cases
-	std::string char1 = "*";
-	ScalarConverter::convert(char1);
-	std::string char2 = "	";
-	ScalarConverter::convert(char2);
-	std::string char3 = "nan";
-	ScalarConverter::convert(char3);
+	std::cout << UNDERLINED << FG_BR_BLUE << "CHAR cases:" << RESET << std::endl;
+	print_test("*");
+	print_test("	"); //tab, not printable
+	print_test("nan");
+	print_test("f");
+	print_test(".");
+	print_test("ff");
+	print_test("..");
+	print_test("a");
+	print_test("aa");
 	//int cases
-	std::string int1 = "0";
-	ScalarConverter::convert(int1);
-	std::string int2 = "-42";
-	ScalarConverter::convert(int2);
-	std::string int3 = "42";
-	ScalarConverter::convert(int3);
+	std::cout << UNDERLINED << FG_BR_BLUE << "INT cases:" << RESET << std::endl;
+	print_test("0");
+	print_test("-42");
+	print_test("42");
 	//float cases
-	std::string float1 = "0.0f";
-	ScalarConverter::convert(float1);
-	std::string float2 = "-4.2f";
-	ScalarConverter::convert(float2);
-	std::string float3 = "4.2f";
-	ScalarConverter::convert(float3);
+	std::cout << UNDERLINED << FG_BR_BLUE << "FLOAT cases:" << RESET << std::endl;
+	print_test("0.0f");
+	print_test("-4.2f");
+	print_test("4.2f");
 	//double cases
-	std::string double1 = "0.0";
-	ScalarConverter::convert(double1);
-	std::string double2 = "-4.2";
-	ScalarConverter::convert(double2);
-	std::string double3 = "4.2";
-	ScalarConverter::convert(double3);
+	std::cout << UNDERLINED << FG_BR_BLUE << "DOUBLE cases:" << RESET << std::endl;
+	print_test("0.0");
+	print_test("-4.2");
+	print_test("4.2");
+	//limit cases, check long's limits, int limits, extended ascii limits, printable limits..
+	std::cout << UNDERLINED << FG_BR_BLUE << "LIMIT cases:" << RESET << std::endl;
+	print_test("9223372036854775807");
+	print_test("-9223372036854775808");
+	print_test("2147483647");
+	print_test("-2147483648");
+	print_test("256");
+	print_test("255");
+	print_test("128");
+	print_test("127");
+	print_test("32");
+	print_test("31");
 }
 
 int	main(int argc, char **argv)
