@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:49:21 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 19:37:05 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 20:09:15 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,8 @@ static void convert_nbr(std::string literal, Type t)
 	return formatter(format);
 }
 
+/* ************************************************************************** */
+
 void ScalarConverter::convert(std::string literal)
 {
 	if (is_edge_cases(literal) == 1)
@@ -170,4 +172,13 @@ void ScalarConverter::convert(std::string literal)
 		else
 			return (convert_nbr(literal, INT));
 	}
+}
+ScalarConverter::~ScalarConverter(void){}
+ScalarConverter::ScalarConverter(void){}
+ScalarConverter::ScalarConverter(ScalarConverter const &src){
+	*this = src;
+}
+ScalarConverter &ScalarConverter::operator=(ScalarConverter const &src){
+	if (this != &src){}
+	return (*this);
 }

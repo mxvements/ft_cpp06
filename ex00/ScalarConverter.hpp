@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:40:21 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 18:50:13 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 20:18:42 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,14 @@ struct EdgeCase
 /*SCALAR CONVRTER*/
 class ScalarConverter
 {
-private:
-protected:
-public:
-	static void convert(std::string literal); // output value in 4 scalar types - char, int, float, double
+	private:
+		~ScalarConverter(void);
+		ScalarConverter(void);
+		ScalarConverter(ScalarConverter const &src);
+		ScalarConverter &operator=(ScalarConverter const &src);
+	protected:
+	public:
+		static void convert(std::string literal); // output value in 4 scalar types - char, int, float, double
 };
 
 /* ************************************************************************** */

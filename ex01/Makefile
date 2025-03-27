@@ -1,9 +1,9 @@
-NAME=convert
-CC=c++
-FLAGS=-Wall -Wextra -Werror -g3 -std=c++98
+NAME=	serializer
+CC=		c++
+FLAGS=	-Wall -Wextra -Werror -g3 -std=c++98
 
 FILES = main.cpp \
-		ScalarConverter.cpp
+		Serializer.cpp
 
 OBJ_PATH=	.obj/
 OBJ=		$(FILES:%.cpp=$(OBJ_PATH)%.o)

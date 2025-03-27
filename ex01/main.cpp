@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:13:26 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 19:22:27 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 20:26:27 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,21 @@
 
 int main(void)
 {
+	Data *d = new Data();
+	d->int_data = 42;
+	d->str_data = "Hello world";
+	uintptr_t ptr;
+	try {
+		std::cout << "Before : " << d->int_data << " " << d->str_data << std::endl;
+		ptr = Serializer::serialize(d);
+		std::cout << "Serialized pointer comarison : ptr -> " << ptr << " data -> " << d << std::endl;
+		Data *dd = Serializer::deserialize(ptr);
+		std::cout << "After serialization : " << dd->int_data << " " << d->str_data << std::endl;
+		std::cout << "Deserialized pointer comarison : d -> " << d << " dd -> " << dd << std::endl;
+
+	} catch (const std::exception &e){
+		std::cerr << e.what() << std::endl;
+	}
+	
 	return (0);
 }
