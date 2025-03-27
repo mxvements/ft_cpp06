@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:49:21 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 16:06:00 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:26:58 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,16 @@ static void formatter(Format f[4])
 	}
 }
 
+static void impossible(void)
+{
+	Format f[4] = {
+		Format(CHAR, "impossible"),
+		Format(INT, "impossible"),
+		Format(FLOAT, "impossible"),
+		Format(DOUBLE, "impossible")};
+	return formatter(f);
+}
+
 static int is_edge_cases(std::string literal)
 {
 	EdgeCase cases[6] = {
@@ -109,7 +119,6 @@ static int is_edge_cases(std::string literal)
  */
 static void convert_char(std::string literal)
 {
-	// explicit conversion
 	char c = literal[0];
 	int i = static_cast<int>(c);
 	float f = static_cast<float>(c);
@@ -118,14 +127,32 @@ static void convert_char(std::string literal)
 	return formatter(format);
 }
 
+static void convert_int(std::string literal)
+{
+	char *end_ptr;
+	long l = std::strtol(literal.c_str(), &end_ptr, 10);
+	if (errno)
+		return impossible();
+	std::string str_end = end_ptr;
+	if (str_end.length() > 0)
+		return impossible();
+	Format format[4] = {
+		(l < 0 || l > 255)
+			? Format(CHAR, "impossible") //not in extended ascii
+			: ( l < 32 || l > 127)
+				? Format(CHAR, "Non displayable") // not in printable ascii
+				: static_cast<char>(l), 
+		(l < INT_MIN || l > INT_MAX) 
+			? Format(INT, "impossible") 
+			: static_cast<int>(l), 
+		static_cast<float>(l),
+		static_cast<double>(l)
+		};
+	return formatter(format);
+}
+
 void ScalarConverter::convert(std::string literal)
 {
-	std::cout << std::endl;
-	std::cout << "testing: " << literal << std::endl;
-	// general case:
-	//  1 - if there's a f -> it's float
-	//  2 - if there's a . -> it's a double
-	//  3 - if the first is not a digit or +/- -> char else int
 	if (is_edge_cases(literal) == 1)
 	{
 		return;
@@ -142,17 +169,14 @@ void ScalarConverter::convert(std::string literal)
 	}
 	else if (literal.length() == 1 && !std::isdigit(literal[0]) && (std::isprint(literal[0]) || std::iscntrl(literal[0])))
 	{
-		std::cout << "could be a char!" << std::endl;
 		convert_char(literal);
 	}
 	else if ((std::isdigit(literal[0])) || (!std::isdigit(literal[0]) && std::isdigit(literal[1])))
 	{
-		std::cout << "could be an int!" << std::endl;
-		// use atoi
+		convert_int(literal);
 	}
 	else
 	{
-		Format f[4] = {Format(CHAR, "impossible"), Format(INT, "impossible"), Format(FLOAT, "impossible"), Format(DOUBLE, "impossible")};
-		return formatter(f);
+		impossible();
 	}
 }

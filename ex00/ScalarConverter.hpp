@@ -6,7 +6,7 @@
 /*   By: luciama2 <luciama2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:40:21 by luciama2          #+#    #+#             */
-/*   Updated: 2025/03/27 14:45:35 by luciama2         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:00:36 by luciama2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,12 @@
 #define SCALARCONVERTER_HPP
 
 #include <string>
-#include <cctype>
+#include <cerrno>
+#include <cstdlib> 
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <limits>
+#include <climits>
 
 /* ************************************************************************** */
 /* UTILS FOR THE FORMAT OUTPUT*/
